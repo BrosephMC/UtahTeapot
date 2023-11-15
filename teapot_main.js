@@ -1,9 +1,4 @@
-//import * as THREE from 'three';
-//import * as THREE from "/node_modules/three/build/three.module.js";
-//import * as THREE from "/node_modules/three";
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
-//import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
-
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -13,22 +8,19 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 5;
 
-// -- Cube
+// CUBE
 const geometry = new THREE.BoxGeometry( 1, 1, 1 );
 //const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
 const material = new THREE.MeshNormalMaterial( { wireframe: true } );
 const cube = new THREE.Mesh( geometry, material );
 cube.position.y -= 2.5;
 scene.add( cube );
-// -- Cube end
 
-// -- 3D models
-// import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+// 3D MODELS
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { GLTFLoader } from 'https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
 
-
+// Moped model
+//https://poly.pizza/m/6XXj6DSBb08
 
 
 let loadedModels = [];
@@ -36,13 +28,12 @@ let numOfModels = 10;
 const loader = new GLTFLoader();
 
 for(let i = 0; i < numOfModels; i++){
-	// loader.load( 'assets/shiba/scene.gltf', function ( gltf ) {
-	loader.load( 'https://raw.githubusercontent.com/BrosephMC/Brosephmc.github.io/main/assets/shiba/scene.gltf', function ( gltf ) {
+	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/VR-Mobil.glb', function ( glb ) {
 
-		loadedModels[i] = gltf;
-		scene.add( gltf.scene );
-		gltf.scene.position.x = -numOfModels/2;
-		gltf.scene.position.x += i;
+		loadedModels[i] = glb;
+		scene.add( glb.scene );
+		glb.scene.position.x = -numOfModels/2;
+		glb.scene.position.x += i;
 
 	}, undefined, function ( error ) {
 
@@ -50,7 +41,12 @@ for(let i = 0; i < numOfModels; i++){
 
 	} );
 }
-// -- 3D models end
+
+// LIGHTS
+const light = new THREE.DirectionalLight(0xffffff, 2)
+light.position.set(2, 2, 5)
+scene.add(light)
+
 
 function animate() {
 	requestAnimationFrame( animate );
