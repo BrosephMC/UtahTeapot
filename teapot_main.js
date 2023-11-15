@@ -28,10 +28,16 @@ let numOfModels = 10;
 const loader = new GLTFLoader();
 
 for(let i = 0; i < numOfModels; i++){
-	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/VR-Mobil.glb', function ( glb ) {
+	//loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/VR-Mobil.glb', function ( glb ) {
+	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/teapot.glb', function ( glb ) {
 
 		loadedModels[i] = glb;
 		scene.add( glb.scene );
+
+		glb.scene.scale.x = 0.4
+		glb.scene.scale.y = 0.4
+		glb.scene.scale.z = 0.4
+
 		glb.scene.position.x = -numOfModels/2;
 		glb.scene.position.x += i;
 
