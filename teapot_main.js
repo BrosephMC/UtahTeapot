@@ -11,6 +11,8 @@
 
 //Rock by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/dmRuyy1VXEv)
 
+//Time Hotel 5.10 AviatorGlasses by S. Paul Michael [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/dAwE-2WVHIt)
+
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
 import { TeapotGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/geometries/TeapotGeometry.js';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
@@ -118,7 +120,8 @@ function generateNoiseTexture(width, height, baseColor, contrast) {
 
 //TEAPOT
 const teapotGeometry = new TeapotGeometry(0.5, 8)
-const teapotMaterial = new THREE.MeshNormalMaterial({ wireframe: false })
+// const teapotMaterial = new THREE.MeshNormalMaterial({ wireframe: false })
+const teapotMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 
 const giantTeaPot = new THREE.Mesh(teapotGeometry, teapotMaterial)
 giantTeaPot.scale.x = 50;
@@ -164,7 +167,7 @@ for(let i = 0; i < numOfBikers; i++){
 	glb.scene.scale.y = 0.65
 	glb.scene.scale.z = 0.65
 	glb.scene.rotation.y = -Math.PI / 2
-	const Biker = new THREE.Mesh(teapotGeometry, teapotMaterial)
+	const Biker = new THREE.Mesh(teapotGeometry, new THREE.MeshStandardMaterial({ color: new THREE.Color(Math.random(), Math.random(), Math.random()) }))
 	Biker.position.y = 0.8
 
 	loadedBikers[i].add(glb.scene)
@@ -225,7 +228,7 @@ for(let i = 0; i < numOfBikers; i++){
 
 // BUNCH OF Cactus
 const loadedCactus = [];
-let numOfCactus = 100;
+let numOfCactus = 80;
 for(let i = 0; i < numOfCactus; i++){
 	loadedCactus.push(new THREE.Object3D())
 	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/Cactus.glb', function ( glb ) {
@@ -241,6 +244,32 @@ for(let i = 0; i < numOfCactus; i++){
 
 	loadedCactus[i] = glb.scene;
 	scene.add( loadedCactus[i] );
+
+	}, undefined, function ( error ) {
+
+		console.error( error );
+
+	} );
+}
+
+// BUNCH OF Rocks
+const loadedRocks = [];
+let numOfRocks = 25;
+for(let i = 0; i < numOfRocks; i++){
+	loadedRocks.push(new THREE.Object3D())
+	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/Rock.glb', function ( glb ) {
+
+	glb.scene.castShadow = false
+	glb.scene.scale.x = Math.random()*4 + 2
+	glb.scene.scale.y = Math.random()*2 + 2
+	glb.scene.scale.z = Math.random()*4 + 2
+	glb.scene.position.x = Math.random() * mapSize - mapSize/2
+	glb.scene.position.y = 0.2*glb.scene.scale.y
+	glb.scene.position.z = Math.random() * mapSize - mapSize/2
+	glb.scene.rotation.y = Math.random() * Math.PI * 2
+
+	loadedRocks[i] = glb.scene;
+	scene.add( loadedRocks[i] );
 
 	}, undefined, function ( error ) {
 
@@ -346,9 +375,11 @@ function animate() {
 		if(Math.abs(loadedBikers[i].position.x) > mapSize*0.25 || Math.abs(loadedBikers[i].position.z) > mapSize*0.25){
 			loadedBikers[i].rotation.y += 0.08/8;
 		}
-		//loadedBikers[i].position.y = Math.sin(currentTime/1000*2+i)*0.5;
-		//loadedBikers[i].rotation.y += 0.01;
 	}
+
+	if (keyState[32]) {
+        camera.lookAt(giantTeaPot.position.x+50, 20, giantTeaPot.position.z);
+    }
 
 	renderer.render( scene, camera );
 }
