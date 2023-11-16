@@ -9,6 +9,8 @@
 
 //Cactus by Quaternius (https://poly.pizza/m/HsEJgRLQWX)
 
+//Rock by Poly by Google [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/dmRuyy1VXEv)
+
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
 import { TeapotGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/geometries/TeapotGeometry.js';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
@@ -122,14 +124,12 @@ const giantTeaPot = new THREE.Mesh(teapotGeometry, teapotMaterial)
 giantTeaPot.scale.x = 50;
 giantTeaPot.scale.y = 50;
 giantTeaPot.scale.z = 50;
-giantTeaPot.position.x = -mapSize * 0.25;
+giantTeaPot.position.x = -mapSize * 0.3;
 giantTeaPot.position.y = 23;
-giantTeaPot.position.z = mapSize * 0.25;
+giantTeaPot.position.z = mapSize * 0.3;
 scene.add(giantTeaPot)
 
-// Moped model
-
-
+// SCOOTER
 const scooter = new THREE.Object3D();
 scene.add(scooter);
 
@@ -199,33 +199,54 @@ for(let i = 0; i < numOfBikers; i++){
 // }
 
 // BUNCH OF Bananas
-const loadedModels = [];
-let numOfModels = 100;
-for(let i = 0; i < numOfModels; i++){
-	loadedModels.push(new THREE.Object3D())
-	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/Banana.glb', function ( glb ) {
+// const loadedModels = [];
+// let numOfModels = 100;
+// for(let i = 0; i < numOfModels; i++){
+// 	loadedModels.push(new THREE.Object3D())
+// 	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/Banana.glb', function ( glb ) {
 
-	glb.scene.castShadow = true
-	glb.scene.scale.x = 0.01
-	glb.scene.scale.y = 0.01
-	glb.scene.scale.z = 0.01
+// 	glb.scene.castShadow = true
+// 	glb.scene.scale.x = 0.01
+// 	glb.scene.scale.y = 0.01
+// 	glb.scene.scale.z = 0.01
+// 	glb.scene.position.x = Math.random() * mapSize - mapSize/2
+// 	glb.scene.position.z = Math.random() * mapSize - mapSize/2
+// 	glb.scene.rotation.y = Math.random() * Math.PI * 2
+
+// 	loadedModels[i] = glb.scene;
+// 	scene.add( loadedModels[i] );
+
+// 	}, undefined, function ( error ) {
+
+// 		console.error( error );
+
+// 	} );
+// }
+
+// BUNCH OF Cactus
+const loadedCactus = [];
+let numOfCactus = 100;
+for(let i = 0; i < numOfCactus; i++){
+	loadedCactus.push(new THREE.Object3D())
+	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/Cactus.glb', function ( glb ) {
+
+	glb.scene.castShadow = false
+	glb.scene.scale.x = Math.random() + 2
+	glb.scene.scale.y = Math.random() + 2
+	glb.scene.scale.z = Math.random() + 2
 	glb.scene.position.x = Math.random() * mapSize - mapSize/2
+	glb.scene.position.y = -1
 	glb.scene.position.z = Math.random() * mapSize - mapSize/2
 	glb.scene.rotation.y = Math.random() * Math.PI * 2
 
-	loadedModels[i] = glb.scene;
-	scene.add( loadedModels[i] );
-	// teapotMesh.position.x = i/numOfModels * mapSize - mapSize/2
-	// teapotMesh.position.z = i/numOfModels * mapSize - mapSize/2
-	//scene.add(loadedModels[i])
+	loadedCactus[i] = glb.scene;
+	scene.add( loadedCactus[i] );
 
 	}, undefined, function ( error ) {
 
 		console.error( error );
 
 	} );
-
-
 }
 
 // LIGHTS
@@ -315,10 +336,10 @@ function animate() {
 	orbitControls.update();
     //camera.lookAt(scooter.position);
 
-	for(let i = 0; i < numOfModels; i++){
-		loadedModels[i].position.y = Math.sin(currentTime/1000*2+i)*0.5;
-		loadedModels[i].rotation.y += 0.01;
-	}
+	// for(let i = 0; i < numOfModels; i++){
+	// 	loadedModels[i].position.y = Math.sin(currentTime/1000*2+i)*0.5;
+	// 	loadedModels[i].rotation.y += 0.01;
+	// }
 
 	for(let i = 0; i < numOfBikers; i++){
 		loadedBikers[i].translateZ(-0.08)
