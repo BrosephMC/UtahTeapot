@@ -7,6 +7,8 @@
 //https://poly.pizza/m/6XXj6DSBb08
 //VR-Mobil by Vladimir Ilic [CC-BY] via Poly Pizza
 
+//Cactus by Quaternius (https://poly.pizza/m/HsEJgRLQWX)
+
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
 import { TeapotGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/geometries/TeapotGeometry.js';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
@@ -182,18 +184,48 @@ for(let i = 0; i < numOfBikers; i++){
 
 
 // BUNCH OF TEAPOTS
+// const loadedModels = [];
+// let numOfModels = 100;
+// for(let i = 0; i < numOfModels; i++){
+// 	const teapotMesh = new THREE.Mesh(teapotGeometry, teapotMaterial)
+// 	teapotMesh.castShadow = true
+// 	teapotMesh.position.x = Math.random() * mapSize - mapSize/2
+// 	teapotMesh.position.z = Math.random() * mapSize - mapSize/2
+// 	teapotMesh.rotation.y = Math.random() * Math.PI * 2
+// 	// teapotMesh.position.x = i/numOfModels * mapSize - mapSize/2
+// 	// teapotMesh.position.z = i/numOfModels * mapSize - mapSize/2
+// 	loadedModels[i] = teapotMesh
+// 	scene.add(teapotMesh)
+// }
+
+// BUNCH OF Bananas
 const loadedModels = [];
 let numOfModels = 100;
 for(let i = 0; i < numOfModels; i++){
-	const teapotMesh = new THREE.Mesh(teapotGeometry, teapotMaterial)
-	teapotMesh.castShadow = true
-	teapotMesh.position.x = Math.random() * mapSize - mapSize/2
-	teapotMesh.position.z = Math.random() * mapSize - mapSize/2
-	teapotMesh.rotation.y = Math.random() * Math.PI * 2
+	loadedModels.push(new THREE.Object3D())
+	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/Banana.glb', function ( glb ) {
+
+	glb.scene.castShadow = true
+	glb.scene.scale.x = 0.01
+	glb.scene.scale.y = 0.01
+	glb.scene.scale.z = 0.01
+	glb.scene.position.x = Math.random() * mapSize - mapSize/2
+	glb.scene.position.z = Math.random() * mapSize - mapSize/2
+	glb.scene.rotation.y = Math.random() * Math.PI * 2
+
+	loadedModels[i] = glb.scene;
+	scene.add( loadedModels[i] );
 	// teapotMesh.position.x = i/numOfModels * mapSize - mapSize/2
 	// teapotMesh.position.z = i/numOfModels * mapSize - mapSize/2
-	loadedModels[i] = teapotMesh
-	scene.add(teapotMesh)
+	//scene.add(loadedModels[i])
+
+	}, undefined, function ( error ) {
+
+		console.error( error );
+
+	} );
+
+
 }
 
 // LIGHTS
