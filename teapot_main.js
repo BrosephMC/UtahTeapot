@@ -156,6 +156,23 @@ loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets
 
 	} );
 
+loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/AviatorGlasses.glb', function ( glb ) {
+
+	glb.scene.scale.x = 0.65
+	glb.scene.scale.y = 0.65
+	glb.scene.scale.z = 0.65
+	glb.scene.position.z = -0.95
+
+	scooter.add(glb.scene)
+	//scene.add( glb.scene );
+
+}, undefined, function ( error ) {
+
+	console.error( error );
+
+} );
+
+
 // BUNCH OF BIKERS
 const loadedBikers = [];
 let numOfBikers = 10;
