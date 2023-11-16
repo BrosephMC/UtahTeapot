@@ -1,3 +1,12 @@
+//https://poly.pizza/m/ahOO6wz8sV0
+//Banana by Poly by Google [CC-BY] via Poly Pizza
+
+//https://www.freepik.com/free-photo/grey-wall-texture-background_34521999.htm#query=bump%20texture%20sand&position=24&from_view=search&track=ais&uuid=ccc39811-8f5d-4064-85da-5c6412efe2ae"
+//Image by kbza on Freepik
+
+//https://poly.pizza/m/6XXj6DSBb08
+//VR-Mobil by Vladimir Ilic [CC-BY] via Poly Pizza
+
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
 import { TeapotGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/geometries/TeapotGeometry.js';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
@@ -47,10 +56,9 @@ const texture = cubeLoader.load([
 scene.background = texture;
 
 //GROUND PLANE
-//https://www.freepik.com/free-photo/grey-wall-texture-background_34521999.htm#query=bump%20texture%20sand&position=24&from_view=search&track=ais&uuid=ccc39811-8f5d-4064-85da-5c6412efe2ae"
-//Image by kbza on Freepik
+
 const bumpMap = new THREE.TextureLoader().load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/texture1.jpg');
-let bumpMapScale = 10
+let bumpMapScale = 20
 bumpMap.repeat.set(bumpMapScale, bumpMapScale);
 bumpMap.wrapS = bumpMapScale
 bumpMap.wrapT = bumpMapScale
@@ -63,9 +71,9 @@ const planeMaterial = new THREE.MeshStandardMaterial({
     color: 0xD8B48C,
 	map: generateNoiseTexture(1024, 1024, 150, 1),
     bumpMap: bumpMap,
-    bumpScale: 5,
-    metalness: 0.1,
-    roughness: 0.5,
+    bumpScale: 3,
+    metalness: 0.6,
+    roughness: 0.7,
 });
 
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -107,19 +115,18 @@ function generateNoiseTexture(width, height, baseColor, contrast) {
 //TEAPOT
 const teapotGeometry = new TeapotGeometry(0.5, 8)
 const teapotMaterial = new THREE.MeshNormalMaterial({ wireframe: false })
-const teapotRider = new THREE.Mesh(teapotGeometry, teapotMaterial)
 
 const giantTeaPot = new THREE.Mesh(teapotGeometry, teapotMaterial)
 giantTeaPot.scale.x = 50;
 giantTeaPot.scale.y = 50;
 giantTeaPot.scale.z = 50;
-giantTeaPot.position.x = mapSize * 0.25;
+giantTeaPot.position.x = -mapSize * 0.25;
 giantTeaPot.position.y = 23;
 giantTeaPot.position.z = mapSize * 0.25;
 scene.add(giantTeaPot)
 
 // Moped model
-//https://poly.pizza/m/6XXj6DSBb08
+
 
 const scooter = new THREE.Object3D();
 scene.add(scooter);
@@ -127,7 +134,7 @@ scene.add(scooter);
 const loader = new GLTFLoader();
 loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/VR-Mobil.glb', function ( glb ) {
 
-		//scooter = glb;
+		const teapotRider = new THREE.Mesh(teapotGeometry, teapotMaterial)
 		glb.scene.scale.x = 0.65
 		glb.scene.scale.y = 0.65
 		glb.scene.scale.z = 0.65
@@ -138,13 +145,41 @@ loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets
 		scooter.add(teapotRider)
 		//scene.add( glb.scene );
 
+	}, undefined, function ( error ) {
 
+		console.error( error );
+
+	} );
+
+// BUNCH OF BIKERS
+const loadedBikers = [];
+let numOfBikers = 10;
+for(let i = 0; i < numOfBikers; i++){
+	loadedBikers.push(new THREE.Object3D())
+	loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/VR-Mobil.glb', function ( glb ) {
+
+	glb.scene.scale.x = 0.65
+	glb.scene.scale.y = 0.65
+	glb.scene.scale.z = 0.65
+	glb.scene.rotation.y = -Math.PI / 2
+	const Biker = new THREE.Mesh(teapotGeometry, teapotMaterial)
+	Biker.position.y = 0.8
+
+	loadedBikers[i].add(glb.scene)
+	loadedBikers[i].add(Biker)
 
 	}, undefined, function ( error ) {
 
 		console.error( error );
 
 	} );
+
+	loadedBikers[i].position.x = Math.random() * mapSize/2 - mapSize/4
+	loadedBikers[i].position.z = Math.random() * mapSize/2 - mapSize/4
+	loadedBikers[i].rotation.y = Math.random() * Math.PI * 2
+	scene.add(loadedBikers[i]);
+}
+
 
 // BUNCH OF TEAPOTS
 const loadedModels = [];
@@ -163,7 +198,7 @@ for(let i = 0; i < numOfModels; i++){
 
 // LIGHTS
 const light = new THREE.DirectionalLight(0xffffff, 2)
-light.position.set(0.5, 5, 0.5)
+light.position.set(0, 5, 0)
 light.castShadow = true
 light.shadow.camera.near = 0.1;
 light.shadow.camera.far = mapSize;
@@ -195,20 +230,27 @@ function updateScooter() {
 		}
     }
 
+	// Move backward when S is pressed
+	if (keyState[83]) {
+		if(currentSpeed > -0.02){
+			currentSpeed -= 0.001;
+		}
+	}
+
     // Turn left when A is pressed
-    if (keyState[65] && currentSpeed > 0) {
+    if (keyState[65] && currentSpeed != 0) {
         scooter.rotation.y += currentSpeed/5;
     }
 
     // Turn right when D is pressed
-    if (keyState[68] && currentSpeed > 0) {
+    if (keyState[68] && currentSpeed != 0) {
         scooter.rotation.y -= currentSpeed/5;
     }
 
-	if(currentSpeed > 0){
+	if(currentSpeed != 0){
 		currentSpeed *= 0.97;
 	}
-	if(currentSpeed < 0.00001){
+	if(Math.abs(currentSpeed) < 0.00001){
 		currentSpeed = 0
 	}
 	scooter.translateZ(-currentSpeed)
@@ -244,6 +286,15 @@ function animate() {
 	for(let i = 0; i < numOfModels; i++){
 		loadedModels[i].position.y = Math.sin(currentTime/1000*2+i)*0.5;
 		loadedModels[i].rotation.y += 0.01;
+	}
+
+	for(let i = 0; i < numOfBikers; i++){
+		loadedBikers[i].translateZ(-0.08)
+		if(Math.abs(loadedBikers[i].position.x) > mapSize*0.25 || Math.abs(loadedBikers[i].position.z) > mapSize*0.25){
+			loadedBikers[i].rotation.y += 0.08/8;
+		}
+		//loadedBikers[i].position.y = Math.sin(currentTime/1000*2+i)*0.5;
+		//loadedBikers[i].rotation.y += 0.01;
 	}
 
 	renderer.render( scene, camera );
