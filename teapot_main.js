@@ -39,12 +39,15 @@ camera.add(listener);
 
 // const sound = new THREE.PositionalAudio(listener);
 const sound = new THREE.Audio(listener);
+//const sound2 = new THREE.Audio(listener);
 const audioLoader = new THREE.AudioLoader();
 
-audioLoader.load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/engine_clip.mp3', function (buffer) {
+audioLoader.load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/engine_edited.mp3', function (buffer) {
     sound.setBuffer(buffer);
+	//sound2.setBuffer(buffer);
     //sound.setRefDistance(100);
 });
+
 
 // function playSound(position) {
 //     const source = new THREE.PositionalAudio(listener);
@@ -376,13 +379,16 @@ function updateScooter() {
 	if(currentSpeed != 0){
 		currentSpeed *= 0.97;
 
-		delay +=1
-		if(delay > 11){
-			sound.stop()
-			delay = 0
-		}
-		sound.setPlaybackRate(currentSpeed*15)
+		// delay +=1
+		// if(delay > 11){
+		// 	sound.stop()
+		// 	delay = 0
+		// }
+		sound.setPlaybackRate(Math.abs(currentSpeed)*15)
+		sound.setVolume(currentSpeed*12)
+		//sound2.setPlaybackRate(currentSpeed*15)
 		sound.play()
+		
 	}
 	if(Math.abs(currentSpeed) < 0.0001){
 		currentSpeed = 0
