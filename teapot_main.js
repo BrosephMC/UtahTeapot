@@ -32,6 +32,29 @@ camera.position.z = 5;
 camera.position.y = 5;
 camera.lookAt(0, 0, 0);
 
+//AUDIO
+//https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/engine_clip.mp3
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// const sound = new THREE.PositionalAudio(listener);
+const sound = new THREE.Audio(listener);
+const audioLoader = new THREE.AudioLoader();
+
+audioLoader.load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/engine_clip.mp3', function (buffer) {
+    sound.setBuffer(buffer);
+    //sound.setRefDistance(100);
+});
+
+// function playSound(position) {
+//     const source = new THREE.PositionalAudio(listener);
+//     source.setBuffer(sound.buffer); // Reuse the same buffer
+//     source.setRefDistance(10);
+//     source.position.copy(position); // Set the position of the source
+// 	console.log(source.position)
+// 	source.play();
+// }
+
 //CAMERA MOVEMENT
 const keyState = {};
 
@@ -134,6 +157,7 @@ scene.add(giantTeaPot)
 // SCOOTER
 const scooter = new THREE.Object3D();
 scene.add(scooter);
+//scooter.add(sound);
 
 const loader = new GLTFLoader();
 loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/VR-Mobil.glb', function ( glb ) {
@@ -188,6 +212,7 @@ for(let i = 0; i < numOfBikers; i++){
 
 	loadedBikers[i].add(glb.scene)
 	loadedBikers[i].add(Biker)
+	//loadedBikers[i].add(sound)
 
 	}, undefined, function ( error ) {
 
@@ -317,15 +342,18 @@ scene.add(ambientLight);
 const folowDistance = 7;
 let targetPosition = new THREE.Vector3();
 let currentSpeed = 0;
+let delay = 0;
 
 function updateScooter() {
-    const speed = 0.1;
+	//console.log(scooter.position)
 
     // Move forward when W is pressed
     if (keyState[87]) {
 		if(currentSpeed < 0.1){
 			currentSpeed += 0.005;
 		}
+		//playSound(scooter.position)
+		//console.log(sound.getDetune())
     }
 
 	// Move backward when S is pressed
@@ -347,9 +375,18 @@ function updateScooter() {
 
 	if(currentSpeed != 0){
 		currentSpeed *= 0.97;
+
+		delay +=1
+		if(delay > 11){
+			sound.stop()
+			delay = 0
+		}
+		sound.setPlaybackRate(currentSpeed*15)
+		sound.play()
 	}
-	if(Math.abs(currentSpeed) < 0.00001){
+	if(Math.abs(currentSpeed) < 0.0001){
 		currentSpeed = 0
+		sound.stop()
 	}
 	scooter.translateZ(-currentSpeed)
 	console.log('Current Speed:', currentSpeed);
@@ -360,7 +397,7 @@ function updateScooter() {
 		targetPosition.copy(scooter.position);
 		targetPosition.y += 4;
         const cameraSpeed = (distanceToScooter-folowDistance+0.3)/300;
-		console.log('Camera Speed:', cameraSpeed);
+		//console.log('Camera Speed:', cameraSpeed);
 		camera.position.lerp(targetPosition, cameraSpeed);
 	}
 
@@ -391,6 +428,8 @@ function animate() {
 		if(Math.abs(loadedBikers[i].position.x) > mapSize*0.25 || Math.abs(loadedBikers[i].position.z) > mapSize*0.25){
 			loadedBikers[i].rotation.y += 0.08/8;
 		}
+		//if(!sound.isPlaying)
+		//playSound(loadedBikers[i].position)
 	}
 
 	if (keyState[32]) {
