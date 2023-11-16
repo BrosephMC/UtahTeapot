@@ -42,8 +42,11 @@ const sound = new THREE.Audio(listener);
 //const sound2 = new THREE.Audio(listener);
 const audioLoader = new THREE.AudioLoader();
 
-audioLoader.load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/engine_edited.mp3', function (buffer) {
+audioLoader.load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/motorcycle-ride-01.mp3', function (buffer) {
     sound.setBuffer(buffer);
+	// sound.setLoop(true);
+	// sound.setLoopStart(22);
+	// sound.setLoopEnd(50);
 	//sound2.setBuffer(buffer);
     //sound.setRefDistance(100);
 });
