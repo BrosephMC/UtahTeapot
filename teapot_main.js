@@ -49,14 +49,23 @@ scene.background = texture;
 //GROUND PLANE
 //https://www.freepik.com/free-photo/grey-wall-texture-background_34521999.htm#query=bump%20texture%20sand&position=24&from_view=search&track=ais&uuid=ccc39811-8f5d-4064-85da-5c6412efe2ae"
 //Image by kbza on Freepik
-const bumpMapTexture = new THREE.TextureLoader().load('https://img.freepik.com/free-photo/grey-wall-texture-background_24837-657.jpg?w=1380&t=st=1700102455~exp=1700103055~hmac=f828881e6de58821d5b9bf33fe6928371d1401f5a518b012009210b3552404ac');
+const bumpMap = new THREE.TextureLoader().load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/texture1.jpg');
+let bumpMapScale = 10
+bumpMap.repeat.set(bumpMapScale, bumpMapScale);
+bumpMap.wrapS = bumpMapScale
+bumpMap.wrapT = bumpMapScale
+// const bumpMap = new THREE.TextureLoader().load('./resources/texture1.jpg');
 
 const planeGeometry = new THREE.PlaneGeometry(mapSize, mapSize, 64, 64);
+
 const planeMaterial = new THREE.MeshStandardMaterial({
+    side: THREE.DoubleSide,
     color: 0xD8B48C,
 	map: generateNoiseTexture(1024, 1024, 150, 1),
-	bumpMap: bumpMapTexture,
-    side: THREE.DoubleSide
+    bumpMap: bumpMap,
+    bumpScale: 5,
+    metalness: 0.1,
+    roughness: 0.5,
 });
 
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
