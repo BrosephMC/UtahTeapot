@@ -42,7 +42,7 @@ const sound = new THREE.Audio(listener);
 //const sound2 = new THREE.Audio(listener);
 const audioLoader = new THREE.AudioLoader();
 
-audioLoader.load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/motorcycle-ride-01.mp3', function (buffer) {
+audioLoader.load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/engine.mp3', function (buffer) {
     sound.setBuffer(buffer);
 	// sound.setLoop(true);
 	// sound.setLoopStart(22);
@@ -96,7 +96,6 @@ let bumpMapScale = 20
 bumpMap.repeat.set(bumpMapScale, bumpMapScale);
 bumpMap.wrapS = bumpMapScale
 bumpMap.wrapT = bumpMapScale
-// const bumpMap = new THREE.TextureLoader().load('./resources/texture1.jpg');
 
 const planeGeometry = new THREE.PlaneGeometry(mapSize, mapSize, 64, 64);
 
@@ -163,7 +162,6 @@ scene.add(giantTeaPot)
 // SCOOTER
 const scooter = new THREE.Object3D();
 scene.add(scooter);
-//scooter.add(sound);
 
 const loader = new GLTFLoader();
 loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets/VR-Mobil.glb', function ( glb ) {
@@ -177,7 +175,6 @@ loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets
 
 		scooter.add(glb.scene)
 		scooter.add(teapotRider)
-		//scene.add( glb.scene );
 
 	}, undefined, function ( error ) {
 
@@ -193,13 +190,17 @@ loader.load( 'https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/assets
 	glb.scene.position.z = -0.95
 
 	scooter.add(glb.scene)
-	//scene.add( glb.scene );
 
 }, undefined, function ( error ) {
 
 	console.error( error );
 
 } );
+
+const areaLight = new THREE.RectAreaLight(0xfff9f9, 40, 0.5, 0.5); //intensity, width, height
+areaLight.position.set(0, 1.4, -1.4);
+areaLight.rotation.set(-Math.PI / 4, 0, 0);
+scooter.add(areaLight);
 
 
 // BUNCH OF BIKERS
@@ -218,7 +219,6 @@ for(let i = 0; i < numOfBikers; i++){
 
 	loadedBikers[i].add(glb.scene)
 	loadedBikers[i].add(Biker)
-	//loadedBikers[i].add(sound)
 
 	}, undefined, function ( error ) {
 
@@ -325,6 +325,31 @@ for(let i = 0; i < numOfRocks; i++){
 	} );
 }
 
+//BOOSTS
+// const bumpMap2 = new THREE.TextureLoader().load('https://raw.githubusercontent.com/BrosephMC/UtahTeapot/main/resources/texture1.jpg');
+// let bumpMap2Scale = 0.5
+// bumpMap2.repeat.set(bumpMap2Scale, bumpMap2Scale);
+// bumpMap2.wrapS = bumpMap2Scale
+// bumpMap2.wrapT = bumpMap2Scale
+
+const rampGeometry = new THREE.BoxGeometry(5, 5, 5); //width, height, length
+const rampMaterial = new THREE.MeshStandardMaterial({color: 0x10FFBF, transparent: true, opacity: 0.5})
+
+// BUNCH OF BOOSTS
+const loadedBoosts = [];
+let numOfBoosts = 5;
+for(let i = 0; i < numOfBoosts; i++){
+	const ramp = new THREE.Mesh(rampGeometry, rampMaterial);
+	ramp.castShadow = false
+	ramp.position.x = Math.random() * mapSize/2 - mapSize/4
+	ramp.position.z = Math.random() * mapSize/2 - mapSize/4
+	ramp.position.y = -3.4
+	// ramp.position.x = i/numOfModels * mapSize - mapSize/2
+	// ramp.position.z = i/numOfModels * mapSize - mapSize/2
+	loadedBoosts[i] = ramp
+	scene.add(ramp)
+}
+
 // LIGHTS
 const light = new THREE.DirectionalLight(0xffffff, 2)
 light.position.set(0, 5, 0)
@@ -335,10 +360,10 @@ light.shadow.camera.left = -mapSize;
 light.shadow.camera.right = mapSize;
 light.shadow.camera.top = mapSize;
 light.shadow.camera.bottom = -mapSize;
-light.shadow.mapSize.width = 1024;
-light.shadow.mapSize.height = 1024;
-// light.shadow.mapSize.width = 16384;
-// light.shadow.mapSize.height = 16384;
+light.shadow.mapSize.width = 2048;
+light.shadow.mapSize.height = 2048;
+light.shadow.mapSize.width = 16384;
+light.shadow.mapSize.height = 16384;
 scene.add(light)
 
 const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
@@ -350,6 +375,16 @@ let targetPosition = new THREE.Vector3();
 let currentSpeed = 0;
 let delay = 0;
 
+function quickProximity(object1, object2, distance){
+	if(Math.abs(object1.position.x - object2.position.x) < distance && 
+	Math.abs(object1.position.z - object2.position.z) < distance && 
+	Math.abs(object1.position.y - object2.position.y) < distance){
+		return true
+	}
+	return false
+}
+
+let velY = 0
 function updateScooter() {
 	//console.log(scooter.position)
 
@@ -358,8 +393,6 @@ function updateScooter() {
 		if(currentSpeed < 0.1){
 			currentSpeed += 0.005;
 		}
-		//playSound(scooter.position)
-		//console.log(sound.getDetune())
     }
 
 	// Move backward when S is pressed
@@ -372,34 +405,69 @@ function updateScooter() {
     // Turn left when A is pressed
     if (keyState[65] && currentSpeed != 0) {
         scooter.rotation.y += currentSpeed/5;
+		if(scooter.rotation.z < 0.1 && currentSpeed > 0)
+			scooter.rotation.z += currentSpeed/20
     }
 
     // Turn right when D is pressed
     if (keyState[68] && currentSpeed != 0) {
         scooter.rotation.y -= currentSpeed/5;
+		if(scooter.rotation.z > -0.1 && currentSpeed > 0)
+			scooter.rotation.z -= currentSpeed/20
     }
 
-	if(currentSpeed != 0){
-		currentSpeed *= 0.97;
+	if(!keyState[65] && !keyState[68]) { scooter.rotation.z *= 0.9 }
+	if(Math.abs(scooter.rotation.z) < 0.0001){ scooter.rotation.z = 0 }
 
-		// delay +=1
-		// if(delay > 11){
-		// 	sound.stop()
-		// 	delay = 0
-		// }
-		sound.setPlaybackRate(Math.abs(currentSpeed)*15)
+	if(currentSpeed != 0){
+		currentSpeed *= scooter.position.y > 0 ? 0.99 : 0.97;
+		sound.setPlaybackRate(Math.min(Math.abs(currentSpeed)*15, 1.8))
 		sound.setVolume(currentSpeed*12)
-		//sound2.setPlaybackRate(currentSpeed*15)
-		sound.play()
-		
+		if(!sound.isPlaying)
+			sound.play()
 	}
+
+	for(let i = 0; i < numOfBoosts; i++){
+		if(quickProximity(scooter, loadedBoosts[i], 4)){
+			currentSpeed = 0.4
+			velY = 0.25
+		}
+	}
+
+	for(let i = 0; i < numOfRocks; i++){
+		if(quickProximity(scooter, loadedRocks[i], 2)){
+			currentSpeed = -0.2
+		}
+	}
+
+	for(let i = 0; i < numOfCactus; i++){
+		if(quickProximity(scooter, loadedCactus[i], 1.5)){
+			currentSpeed = -0.2
+		}
+	}
+
+	for(let i = 0; i < numOfBikers; i++){
+		if(quickProximity(scooter, loadedBikers[i], 1.5)){
+			loadedBikers[i].rotation.y += 5
+			currentSpeed = -0.2
+		}
+	}
+	
+	if(velY > -0.5) { velY -= 0.005 }
+	if(scooter.position.y >= 0) { scooter.position.y += velY }
+	if(scooter.position.y < 0) { scooter.position.y = 0 }
+	// if(scooter.position.y > 1) { scooter.teapotRider.rotation.x += velY/20 }
+	//console.log(velY)
+
 	if(Math.abs(currentSpeed) < 0.0001){
 		currentSpeed = 0
 		sound.stop()
 	}
-	scooter.translateZ(-currentSpeed)
-	console.log('Current Speed:', currentSpeed);
 
+	scooter.translateZ(-currentSpeed)
+	//console.log('Current Speed:', currentSpeed);
+
+	//camera
 	const distanceToScooter = camera.position.distanceTo(scooter.position);
 
 	if (distanceToScooter > folowDistance){
@@ -415,6 +483,7 @@ function updateScooter() {
 }
 
 //ANIMATE
+let initializing = 0
 let prevTime = performance.now();
 function animate() {
 	requestAnimationFrame( animate );
@@ -423,9 +492,10 @@ function animate() {
 	//const deltaTime = (currentTime - prevTime) / 1000;
     prevTime = currentTime;
 
+	if(initializing < 20) { initializing += 1 }
+	if(initializing >= 20)
 	updateScooter();
 	orbitControls.update();
-    //camera.lookAt(scooter.position);
 
 	// for(let i = 0; i < numOfModels; i++){
 	// 	loadedModels[i].position.y = Math.sin(currentTime/1000*2+i)*0.5;
@@ -438,6 +508,7 @@ function animate() {
 			loadedBikers[i].rotation.y += 0.08/8;
 		}
 		//if(!sound.isPlaying)
+		//sound.play()
 		//playSound(loadedBikers[i].position)
 	}
 
