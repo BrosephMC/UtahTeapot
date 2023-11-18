@@ -148,7 +148,11 @@ function generateNoiseTexture(width, height, baseColor, contrast) {
 //TEAPOT
 const teapotGeometry = new TeapotGeometry(0.5, 8)
 // const teapotMaterial = new THREE.MeshNormalMaterial({ wireframe: false })
-const teapotMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+const teapotMaterial = new THREE.MeshStandardMaterial({ 
+	color: 0xffffff ,
+	roughness: 0.1,
+	metalness: 0.3
+});
 
 const giantTeaPot = new THREE.Mesh(teapotGeometry, teapotMaterial)
 giantTeaPot.scale.x = 50;
@@ -214,7 +218,10 @@ for(let i = 0; i < numOfBikers; i++){
 	glb.scene.scale.y = 0.65
 	glb.scene.scale.z = 0.65
 	glb.scene.rotation.y = -Math.PI / 2
-	const Biker = new THREE.Mesh(teapotGeometry, new THREE.MeshStandardMaterial({ color: new THREE.Color(Math.random(), Math.random(), Math.random()) }))
+	const Biker = new THREE.Mesh(teapotGeometry, new THREE.MeshStandardMaterial({ 
+		color: new THREE.Color(Math.random(), Math.random(), Math.random()),
+		metalness: 0.1,
+		roughness: 0.3, }))
 	Biker.position.y = 0.8
 
 	loadedBikers[i].add(glb.scene)
